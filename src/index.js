@@ -36,7 +36,20 @@ function* fetchPlants() {
     const action = { type: 'SET_PLANTS', payload: response.data };
     yield put(action);
   } catch (error) {
-    console.log('Error fetching plants', error);
+    console.error('Error fetching plants', error);
+    alert('Something went wrong.');
+  }
+
+}
+
+function* postPlant(action) {
+
+  try {
+    console.log('hello!', action.payload)
+    yield axios.post('/api/plant', action.payload);
+    yield put({ type: 'FETCH_PLANTS' });
+  } catch (error) {
+    console.error('Error posting plant', error);
     alert('Something went wrong.');
   }
 
@@ -44,6 +57,7 @@ function* fetchPlants() {
 
 function* rootSaga() {
   yield takeEvery('FETCH_PLANTS', fetchPlants);
+  yield takeEvery('ADD_PLANT', postPlant);
 }
 
 const sagaMiddleware = createSagaMiddleware();
