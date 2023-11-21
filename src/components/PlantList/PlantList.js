@@ -1,16 +1,20 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 function PlantList() {
     const dispatch = useDispatch();
 
     const reduxState = useSelector(store => store);
+    const plants = useSelector(store => store.plantList);
+
+    const getPlants = () => dispatch({ type: 'FETCH_PLANTS' });
 
     useEffect(() => {
         console.log('component did mount');
         // dispatch an action to request the plantList from the API
-    }, []); 
+        getPlants();
+    }, []);
 
     return (
         <div>
