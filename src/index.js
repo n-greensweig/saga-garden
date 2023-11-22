@@ -6,24 +6,15 @@ import logger from 'redux-logger';
 
 // Step 1: Saga imports
 import createSagaMiddleware from 'redux-saga';
-import { takeEvery, put } from 'redux-saga/effects';
+import { takeEvery, put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
 import App from './App';
 
-// this startingPlantArray should eventually be removed
-// const startingPlantArray = [
-//   { id: 1, name: 'Rose' },
-//   { id: 2, name: 'Tulip' },
-//   { id: 3, name: 'Oak' }
-// ];
-
 const plantList = (state = [], action) => {
   switch (action.type) {
-    case 'ADD_PLANT':
-      return [...state, action.payload]
     case 'SET_PLANTS':
-      return [...state, action.payload]
+      return action.payload;
     default:
       return state;
   }
@@ -51,6 +42,20 @@ function* postPlant(action) {
   } catch (error) {
     console.error('Error posting plant', error);
     alert('Something went wrong.');
+    throw error;
+  }
+
+}
+
+function* removePlant(action) {
+
+  try {
+    yield axios.delete(`/api/plant/${action.payload}`);
+    yield put({ type: 'FETCH_PLANTS' });
+  } catch (error) {
+    console.error('Error posting plant', error);
+    alert('Something went wrong.');
+    throw error;
   }
 
 }
@@ -58,6 +63,7 @@ function* postPlant(action) {
 function* rootSaga() {
   yield takeEvery('FETCH_PLANTS', fetchPlants);
   yield takeEvery('ADD_PLANT', postPlant);
+  yield takeEvery('REMOVE_PLANT', removePlant);
 }
 
 const sagaMiddleware = createSagaMiddleware();
